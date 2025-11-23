@@ -1,0 +1,59 @@
+grammar gameoL.GoLMeta with org.eclipse.xtext.common.Terminals
+
+generate goLMeta "http://www.GoLMeta.gameoL"
+
+Model:
+    grid=Grid
+    cells+=Cell*
+    cellSets+=CellSet*
+    patterns+=Pattern*
+    rules+=Rule*;
+
+
+Grid:
+    'Grid' name=ID width=INT 'x' height=INT
+;
+
+CellSet:
+    'CellSet' name=ID
+    cells += CellRef*
+;
+
+CellRef:
+    'Cell' x=INT y=INT
+;
+
+Pattern:
+    'Pattern' name=ID 'ref' cellSet=[CellSet|ID]
+    'at' x=INT y=INT
+;
+
+Cell:
+    'Cell' x=INT y=INT state=CellState
+;
+
+enum CellState:
+    alive='alive' |
+    dead='dead'
+;
+
+// Define RuleKind as an enum
+enum RuleKind:
+    Birth='birth' |
+    Survival='survival' |
+    Death='death'
+;
+
+Rule:
+    'Rule' kind=RuleKind 'if neighbors' condition=Condition
+;
+
+Condition:
+    left=INT operator=Operator right=INT
+;
+
+enum Operator:
+    LT = '<' |
+    EQ = '=' |
+    GT = '>'
+;
