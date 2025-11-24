@@ -49,7 +49,7 @@ Rule:
 ;
 
 Condition:
-    left=INT operator=Operator right=INT
+    operator=Operator value=INT
 ;
 
 enum Operator:
