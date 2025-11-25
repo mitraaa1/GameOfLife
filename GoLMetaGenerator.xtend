@@ -52,7 +52,13 @@ class GoLMetaGenerator extends AbstractGenerator {
 				}
 			}
 			
-			«generateInitialGrid(model)»
+			public static ArrayList<Point> getInitialCells() {
+				ArrayList<Point> cells = new ArrayList<Point>();
+				«FOR cell : model.cells.filter[state == CellState.ALIVE]»
+				cells.add(new Point(«cell.x», «cell.y»));  // Cell at («cell.x», «cell.y»)
+				«ENDFOR»
+				return cells;
+			}
 		}
 	'''
 	
@@ -88,48 +94,4 @@ class GoLMetaGenerator extends AbstractGenerator {
 			default: '=='
 		}
 	}
-	
-	def generateInitialGrid(Model model) '''
-		
-		public static boolean[][] getInitialGrid() {
-			«IF model.grid !== null»
-			boolean[][] grid = new boolean[«model.grid.width + 2»][«model.grid.height + 2»];
-			
-			// Initialize all cells to dead (false)
-			for (int i = 0; i < grid.length; i++) {
-				for (int j = 0; j < grid[0].length; j++) {
-					grid[i][j] = false;
-				}
-			}
-			
-			// Set initial alive cells from DSL
-			«FOR cell : model.cells»
-			«generateCell(cell)»
-			«ENDFOR»
-			
-			// Apply patterns
-			«FOR pattern : model.patterns»
-			«generatePattern(pattern)»
-			«ENDFOR»
-			
-			return grid;
-			«ELSE»
-			// No grid defined, return default 50x50 grid
-			return new boolean[52][52];
-			«ENDIF»
-		}
-	'''
-	
-	def generateCell(gameoL.goLMeta.Cell cell) '''
-		«IF cell.state.literal == 'alive'»
-		grid[«cell.x + 1»][«cell.y + 1»] = true;  // Cell at («cell.x», «cell.y») alive
-		«ENDIF»
-	'''
-	
-	def generatePattern(gameoL.goLMeta.Pattern pattern) '''
-		// Pattern «pattern.name» at («pattern.x», «pattern.y»)
-		«FOR cellRef : pattern.cellSet.cells»
-		grid[«pattern.x + cellRef.x + 1»][«pattern.y + cellRef.y + 1»] = true;
-		«ENDFOR»
-	'''
 }
